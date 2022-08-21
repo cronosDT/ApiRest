@@ -28,9 +28,9 @@ export async function getUserController(req: Request, res: Response){
 
 export async function createUserController(req:Request, res: Response){
     try{
-        if(!req.body.email || !req.body.password)
+        if(!req.body.email || !req.body.password || !req.body.name || !req.body.lastName)
     {
-        return res.status(400).json({msg: 'Write your email or password'});    
+        return res.status(400).json({msg: 'Write all data'});    
     }
     const user = await User.findOne({email: req.body.email})
     if(user){

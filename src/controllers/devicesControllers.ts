@@ -26,9 +26,9 @@ export async function getDeviceController(req: Request, res: Response){
 
 export async function createDeviceController(req:Request, res: Response){
     try{
-        if(!req.body.serial)
+        if(!req.body.serial || !req.body.ip || req.body.name || req.body.dueño || req.body.isActive)
     {
-        return res.status(400).json({msg: 'Write the serial'});    
+        return res.status(400).json({msg: 'Write all data'});    
     }
     const device = await Devices.findOne({serial: req.body.serial})
     if(device){
