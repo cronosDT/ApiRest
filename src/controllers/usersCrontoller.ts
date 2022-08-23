@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import User from '../models/userSchema';
+import {User} from '../models/userSchema';
 import {createTocken} from '../config/token'
 
 export const signIn = async (req: Request, res: Response): Promise<Response>=> {

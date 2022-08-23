@@ -1,5 +1,16 @@
-import  {Schema, model, Document} from 'mongoose';
+import  {Schema, model, Document, Model} from 'mongoose';
 import bcrypt from 'bcrypt';
+
+export interface IUserAttrs {
+    name: string
+    lastName: string;
+    email: string;
+    phone: number;
+    password: string;
+}
+
+
+
 
 export interface IUser extends Document {
     name: string;
@@ -8,6 +19,11 @@ export interface IUser extends Document {
     phone: number;
     password: string;
     comprobePasswords: (password: string) => Promise<boolean>;
+}
+
+export interface IUserModel extends Model<IUser> {
+    build(attrs: IUserAttrs): IUser;
+    createUser(attrs: IUserAttrs): Promise<IUser>;
 }
 
 const UserSchema = new Schema({
@@ -34,7 +50,7 @@ const UserSchema = new Schema({
         type: String,
         required: true
     } 
-},{versionKey: false});
+},{versionKey: false, timestamps: true});
 
 UserSchema.pre<IUser>("save", async function(next){
     
@@ -47,9 +63,18 @@ UserSchema.pre<IUser>("save", async function(next){
     next();
 })
 
+UserSchema.statics.build = function(attrs: IUserAttrs) {
+    return new User(attrs)
+}
+
+UserSchema.statics.createUser = function(attrs: IUserAttrs) {
+    const user = User.build(attrs);
+    return user.save()
+}
+
 UserSchema.methods.comprobePasswords = async function(password: string): Promise<Boolean> {
     const schema = this;
     return await bcrypt.compare(password, schema.password);
   };
 
-export default model<IUser>('User', UserSchema);
+export const User = model<IUser, IUserModel>('User', UserSchema);

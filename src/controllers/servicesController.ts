@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb'; 
 import {Request, Response} from 'express';
-import User from '../models/userSchema';
+import { User } from '../models/userSchema';
 import * as services from '../services/servicesUsers'
 
 export async function getUserAllController(_req: Request, res: Response)
@@ -36,8 +36,7 @@ export async function createUserController(req:Request, res: Response){
     if(user){
         return res.status(400).json({msg: 'The user already exists'})
     }
-    const newUser = new User(req.body);
-        await services.createUser(newUser);
+        const newUser = await User.createUser(req.body);
         res.json(`User ${newUser.id} was create successfully`);
     }catch(error){
         res.status(400).json({status: 400, message: error})

@@ -1,4 +1,4 @@
-import User, {IUser} from '../models/userSchema';
+import {User,IUser} from '../models/userSchema';
 import {ObjectId} from 'mongodb'
 
 

@@ -8,11 +8,6 @@ import devicesRouts from './routers/devicesRouts'
 const app  = express();
 
 
-//config
-async function dbActive(){
-    await new DB();
-}
-dbActive();
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -27,6 +22,12 @@ app.use("/devices", devicesRouts)
 
 
 //listen
-app.listen(app.get('port'), () => {
-    console.log(`server running ooon port ${app.get('port')}`);
+app.listen(app.get('port'), async () => {
+    try {
+        await new DB();
+        console.log('Conectado a la base de datos y servidor corriendo en el puerto', app.get('port'))
+    } catch (error) {
+        process.exit(0)        
+    }
+
 });
