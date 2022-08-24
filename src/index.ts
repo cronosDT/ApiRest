@@ -7,7 +7,7 @@ import specialRouts from './routers/specialRouts'
 import devicesRouts from './routers/devicesRouts'
 const app  = express();
 
-
+//config
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -25,9 +25,8 @@ app.use("/devices", devicesRouts)
 app.listen(app.get('port'), async () => {
     try {
         await new DB();
-        console.log('Conectado a la base de datos y servidor corriendo en el puerto', app.get('port'))
+        console.log('Server running on port: ', app.get('port'))
     } catch (error) {
         process.exit(0)        
     }
-
 });

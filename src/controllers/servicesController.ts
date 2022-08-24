@@ -1,12 +1,11 @@
 import {ObjectId} from 'mongodb'; 
 import {Request, Response} from 'express';
-import { User } from '../models/userSchema';
-import * as services from '../services/servicesUsers'
+import { IUser, User } from '../models/userSchema';
 
 export async function getUserAllController(_req: Request, res: Response)
 {
     try{
-    const user = await services.getUserAll();
+    const user = await User.getUserAll();
     res.json(user);
     }catch(error)
     {
@@ -14,30 +13,23 @@ export async function getUserAllController(_req: Request, res: Response)
     }
 }
 
-
-
 export async function getUserController(req: Request, res: Response){
     try{
-        const {id} = req.params;
-        const user = await services.getUser(new ObjectId(id));
+        const user = await User.getUser(new ObjectId(req.params.id));
         res.json(user)
     }catch(error){
-        res.status(400).json({status: 400, message: 'Fail in the search to the user'})
+        res.status(400).json({status: 400, message: 'Verify the id, user not exist'})
     }
 }
 
 export async function createUserController(req:Request, res: Response){
     try{
-        if(!req.body.email || !req.body.password || !req.body.name || !req.body.lastName)
-    {
-        return res.status(400).json({msg: 'Write all data'});    
-    }
-    const user = await User.findOne({email: req.body.email})
-    if(user){
-        return res.status(400).json({msg: 'The user already exists'})
-    }
+        const user = await User.findOne({email: req.body.email})
+        if(user){
+            return res.status(400).json({msg: 'The user already exists'})
+        }
         const newUser = await User.createUser(req.body);
-        res.json(`User ${newUser.id} was create successfully`);
+        res.json(newUser);
     }catch(error){
         res.status(400).json({status: 400, message: error})
     }
@@ -45,25 +37,20 @@ export async function createUserController(req:Request, res: Response){
 
 export async function deleteUserController(req:Request, res: Response){
     try{
-        const { id } = req.params;
-        const user = await services.deleteUser(new ObjectId(id));
-        res.json(`User ${user.id} was deleted successfully`);
+        const user = await User.deletUser(new ObjectId(req.params.id));
+        res.json(user);
     }catch(error){
         res.status(400).json({status: 400, message: 'Fail in the delete to the user'})
     }
 }
 
+
 export const updateUserController = async (req:Request, res: Response) => {
     try{
-        const user = await User.findById({_id: req.userId}) 
-        if(req.body.name) user.set('name', req.body.name)
-        if(req.body.lasName) user.set('lasName', req.body.lastName)
-        if(req.body.email) user.set('email', req.body.email)
-        if(req.body.phone) user.set('phone', req.body.phone)
-        if(req.body.password) user.set('password', req.body.password)
-        await user.save();
-        res.json(`User ${user.id} was updated successfully`);
+        const user = await User.getUser(new ObjectId(req.userId));
+        const update : IUser = await User.updatUser(req.body, user)
+        res.json(update);
     }catch(error){
-        res.status(400).json({status: 400, message: 'Fail in the update to the user'})
+       // res.status(400).json({status: 400, message: 'Fail in the update to the user'})
     }
 }

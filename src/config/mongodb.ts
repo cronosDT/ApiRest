@@ -7,7 +7,7 @@ class ConnectionMongo{
     }   
     connecionmDB(){
         mongoose.connect('mongodb://user:password@mongo:27017/users?authSource=admin')
-        .then(()=>console.log("Connection Successfully"))
+        .then(()=>console.log("Connection successfully to DB"))
         .catch(()=>console.log("conection failed"));
     }
     static getConnectdb(){
