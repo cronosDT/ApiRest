@@ -1,7 +1,6 @@
 import  {Schema, model, Document, Model} from 'mongoose';
 import {ObjectId} from 'mongodb'; 
 import bcrypt from 'bcrypt';
-import {Devices, IDevice} from './deviceSchema'
 
 export interface IUserAttrs {
     name: string
@@ -51,12 +50,9 @@ const UserSchema = new Schema({
 
 UserSchema.pre<IUser>("save", async function(next){
     const schema = this;
-   
-    const device: IDevice = await Devices.findOne({propietaryId: schema.id});
-    if(!device){
-    }else{
-        console.log(device)
-    }
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(schema.password, salt); 
+    schema.password = hash;
     if(!schema.isNew){
         if(schema.isModified('password')){
             const salt = await bcrypt.genSalt(10);
@@ -72,22 +68,6 @@ UserSchema.pre<IUser>("save", async function(next){
     next();
 })
 
-// UserSchema.pre<IUser>("validate", async function(next){
-    
-//     const schema = this;
-//         if(schema.isNew){
-//             const included = ["name", "email", "phone", "password"  ]
-//             const updates = schema.modifiedPaths();
-//             const isInvalid =  updates.every(fields => included.includes(fields))
-//             next(!isInvalid ? new Error("the create is invalid, check de fields") : undefined);
-//         }else{
-//             const restricted = ["id", "createdAt", "updatedAt" ]
-//             const updates = schema.modifiedPaths();
-//             const isInvalid =  updates.every(fields => restricted.includes(fields))
-//             next(isInvalid ? new Error("the update is invalid, check de fields") : undefined);
-//         }
-// })
-
 UserSchema.statics.build = function(attrs: IUserAttrs) {
     return new User(attrs)
 }
@@ -98,7 +78,7 @@ UserSchema.statics.createUser = function(attrs: IUserAttrs) {
 }
 
 UserSchema.statics.getUserAll = function(){
-    return User.find();
+    return User.find().select('-password');
 }
 
 UserSchema.statics.getUser = function(id: ObjectId){
@@ -119,6 +99,7 @@ UserSchema.statics.updatUser = function(attrs: { [key: string]: any}, attrs2: { 
 
 UserSchema.methods.comprobePasswords = async function(password: string): Promise<Boolean> {
     const schema = this;
+    console.log(schema.password)
     return await bcrypt.compare(password, schema.password);
   };
 

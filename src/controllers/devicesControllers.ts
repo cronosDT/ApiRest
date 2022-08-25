@@ -39,7 +39,7 @@ export async function createDeviceController(req:Request, res: Response){
 export async function deleteDeviceController(req:Request, res: Response){
     try{
         const device = await Devices.deleteDevice(new ObjectId(req.params.id));
-        res.json(`The device ${device.id} was deleted  successfully`);
+        res.json(device);
     }catch(error){
         res.status(400).json({status: 400, message: 'Fail in the delete to the device'})
     }
@@ -47,7 +47,7 @@ export async function deleteDeviceController(req:Request, res: Response){
 
 export const updateDeviceController = async (req:Request, res: Response) => {
     try{
-        const device = await Devices.findOne({propietaryId: req.userId});
+        const device = await Devices.findOne({propietary: req.userId});
         const update : IDevice = await Devices.updateDevice(req.body, device)
         res.json(update);
     }catch(error){

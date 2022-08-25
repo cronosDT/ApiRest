@@ -11,7 +11,9 @@ export const signIn = async (req: Request, res: Response): Promise<Response>=> {
     if (!users) {
       return res.status(400).json({ msg: "The User does not exists" });
     }
+    console.log('this is', req.body.password)
     const isMatch = await users.comprobePasswords(req.body.password);
+    console.log(isMatch)
     if (isMatch) {
       return res.status(400).json({ token: createTocken(users) });
     }
