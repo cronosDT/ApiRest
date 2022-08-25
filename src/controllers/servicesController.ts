@@ -47,10 +47,10 @@ export async function deleteUserController(req:Request, res: Response){
 
 export const updateUserController = async (req:Request, res: Response) => {
     try{
-        const user = await User.getUser(new ObjectId(req.userId));
+        const user = await User.findById(new ObjectId(req.userId));
         const update : IUser = await User.updatUser(req.body, user)
         res.json(update);
     }catch(error){
-       // res.status(400).json({status: 400, message: 'Fail in the update to the user'})
+       res.status(400).json({status: 400, message: 'Fail in the update to the user'})
     }
 }

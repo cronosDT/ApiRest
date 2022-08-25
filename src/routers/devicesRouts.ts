@@ -11,7 +11,6 @@ class DevicesRoutes {
     }
     
     routes(): void {
-        this.router.patch('/:id', devices.updateDeviceController);
         this.router.delete('/:id', devices.deleteDeviceController);
         this.router.get('/:id', devices.getDeviceController)
     }

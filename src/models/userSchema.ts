@@ -1,6 +1,7 @@
 import  {Schema, model, Document, Model} from 'mongoose';
 import {ObjectId} from 'mongodb'; 
 import bcrypt from 'bcrypt';
+import {Devices, IDevice} from './deviceSchema'
 
 export interface IUserAttrs {
     name: string
@@ -49,16 +50,26 @@ const UserSchema = new Schema({
 },{versionKey: false, timestamps: true});
 
 UserSchema.pre<IUser>("save", async function(next){
-    
     const schema = this;
-        if(!schema.isModified('password')){
-             return next();
+   
+    const device: IDevice = await Devices.findOne({propietaryId: schema.id});
+    if(!device){
+    }else{
+        console.log(device)
+    }
+    if(!schema.isNew){
+        if(schema.isModified('password')){
+            const salt = await bcrypt.genSalt(10);
+            const hash = await bcrypt.hash(schema.password, salt); 
+            schema.password = hash;
         }
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(schema.password, salt); 
-        schema.password = hash;
-        
-        next();
+        const restricted = ["id", "createdAt", "updatedAt"]
+        const updates = schema.modifiedPaths();
+        const isInvalid =  updates.every(fields => restricted.includes(fields))
+        next(isInvalid ? new Error("the update is invalid, check de fields") : undefined);
+    }
+    
+    next();
 })
 
 // UserSchema.pre<IUser>("validate", async function(next){

@@ -47,7 +47,7 @@ export async function deleteDeviceController(req:Request, res: Response){
 
 export const updateDeviceController = async (req:Request, res: Response) => {
     try{
-        const device = await Devices.getDevice(new ObjectId(req.userId));
+        const device = await Devices.findOne({propietaryId: req.userId});
         const update : IDevice = await Devices.updateDevice(req.body, device)
         res.json(update);
     }catch(error){

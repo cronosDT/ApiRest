@@ -17,6 +17,7 @@ class SpecialRoutes {
         this.router.patch('/', decodeTocken,  services.updateUserController);
         this.router.post('/', decodeTocken,  devices.createDeviceController);
         this.router.get('/devices', decodeTocken , devices.getDeviceAllController);
+        this.router.patch('/devices', decodeTocken, devices.updateDeviceController);
     }
 }
 
