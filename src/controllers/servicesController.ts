@@ -24,6 +24,9 @@ export async function getUserController(req: Request, res: Response){
 
 export async function createUserController(req:Request, res: Response){
     try{
+        if (req.body.updatedAt || req.body.creatededAt || req.body.id) {
+            return res.status(400).json({ msg: "It can not update this parameters" });
+        }
         const user = await User.findOne({email: req.body.email})
         if(user){
             return res.status(400).json({msg: 'The user already exists'})
@@ -47,7 +50,11 @@ export async function deleteUserController(req:Request, res: Response){
 
 export const updateUserController = async (req:Request, res: Response) => {
     try{
-        const user = await User.findById(new ObjectId(req.userId));
+        if (req.body.updatedAt || req.body.createdAt || req.body.id) {
+            return res.status(400).json({ msg: "It can not update this parameters" });
+        }
+        const user = await User.findOne({id: req.userId});
+        console.log(user)
         const update : IUser = await User.updatUser(req.body, user)
         res.json(update);
     }catch(error){

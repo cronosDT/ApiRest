@@ -53,18 +53,6 @@ const devicesSchema = new Schema({
 
 }, {versionKey: false, timestamps: true});
 
-devicesSchema.pre<IDevice>("save", async function(next){
-    const schema = this;   
-    if(!schema.isNew){
-        const restricted = ["id", "createdAt", "updatedAt"]
-        const updates = schema.modifiedPaths();
-        const isInvalid =  updates.every(fields => restricted.includes(fields))
-        next(isInvalid ? new Error("the update is invalid, check de fields") : undefined);
-    }
-    
-    next();
-})
-
 devicesSchema.statics.build = function(device: IDeviceUtils){
     return new Devices(device);
 }
@@ -92,10 +80,7 @@ devicesSchema.statics.updateDevice = function(newDevice: { [key: string]: any}, 
     updateDevice.forEach(field =>{
         device[field] = newDevice[field]
     })
-    return device.save().populate({
-        path:'propietary',
-        select: 'name -_id'
-    });
+    return device.save();
 }
 devicesSchema.statics.createDevice = function(device: IDeviceUtils, id: string){
     const newdevice = Devices.build(device);    

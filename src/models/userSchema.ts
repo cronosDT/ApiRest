@@ -50,20 +50,13 @@ const UserSchema = new Schema({
 
 UserSchema.pre<IUser>("save", async function(next){
     const schema = this;
+
+    if(!schema.isModified('password')){
+        return next();
+    }
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(schema.password, salt); 
     schema.password = hash;
-    if(!schema.isNew){
-        if(schema.isModified('password')){
-            const salt = await bcrypt.genSalt(10);
-            const hash = await bcrypt.hash(schema.password, salt); 
-            schema.password = hash;
-        }
-        const restricted = ["id", "createdAt", "updatedAt"]
-        const updates = schema.modifiedPaths();
-        const isInvalid =  updates.every(fields => restricted.includes(fields))
-        next(isInvalid ? new Error("the update is invalid, check de fields") : undefined);
-    }
     
     next();
 })
