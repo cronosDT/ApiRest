@@ -16,6 +16,9 @@ export async function getUserAllController(_req: Request, res: Response)
 export async function getUserController(req: Request, res: Response){
     try{
         const user = await User.getUser(new ObjectId(req.params.id));
+        if(!user){
+           return res.status(400).json({status: 400, message: 'Verify the id, user not exist'})
+        }
         res.json(user)
     }catch(error){
         res.status(400).json({status: 400, message: 'Verify the id, user not exist'})
