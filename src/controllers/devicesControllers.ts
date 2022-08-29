@@ -53,7 +53,7 @@ export async function deleteDeviceController(req:Request, res: Response){
 
 export const updateDeviceController = async (req:Request, res: Response) => {
     try{
-        if (req.body.updatedAt || req.body.createdAt || req.body.id) {
+        if (req.body.updatedAt || req.body.createdAt || req.body.id || req.body.propietary) {
             return res.status(400).json({ msg: "It can not update this parameters" });
         }
         const device = await Devices.findOne({propietary: req.userId});
